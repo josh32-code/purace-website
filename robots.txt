@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.purace.com/sitemap.xml
+
+# Block backend files
+Disallow: /.env
+
+# Allow images and styles
+Allow: /images/
+Allow: /styles.css
+Allow: /script.js
