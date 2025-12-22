@@ -552,9 +552,13 @@ img {
 .thumbnails {
     display: flex;
     gap: var(--spacing-sm);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
 }
 
 .thumbnails img {
+    flex-shrink: 0;
     width: 80px;
     height: 80px;
     object-fit: cover;
