@@ -525,13 +525,15 @@ img {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
+    width: 100%; /* Ensure gallery doesn't overflow */
+    overflow: hidden; /* Contain children */
 }
 
 .main-image {
     width: 100%;
     height: auto;
-    min-height: 400px;
-    max-height: 800px;
+    aspect-ratio: 1 / 1; /* Force square aspect ratio */
+    max-height: 600px; /* Limit height on large screens */
     overflow: hidden;
     background-color: #f5f5f5;
     border-radius: 8px;
@@ -543,22 +545,27 @@ img {
 
 .main-image img {
     width: 100%;
-    height: auto;
-    object-fit: contain;
-    object-position: center;
+    height: 100%;
+    object-fit: cover; /* Cover the container */
     display: block;
 }
 
 .thumbnails {
     display: flex;
-    gap: var(--spacing-sm);
+    gap: 10px; /* Use px for more precise control */
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.5rem;
+    padding-bottom: 10px;
+    width: 100%; /* Ensure it takes full width */
+    scrollbar-width: none; /* Hide scrollbar Firefox */
 }
 
-.thumbnails img {
-    flex-shrink: 0;
+.thumbnails::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+.thumbnails img, .thumbnails video {
+    flex: 0 0 80px; /* Don't grow, don't shrink, fixed basis */
     width: 80px;
     height: 80px;
     object-fit: cover;
