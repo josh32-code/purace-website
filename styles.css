@@ -23,6 +23,8 @@
 
 html {
     scroll-behavior: smooth;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -31,6 +33,8 @@ body {
     font-family: var(--font-sans);
     line-height: 1.75;
     -webkit-font-smoothing: antialiased;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 h1, h2, h3, .logo {
@@ -1616,6 +1620,14 @@ img {
     .ingredients-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
+    }
+
+    .product-detail {
+        padding: 3rem 1.5rem;
+    }
+
+    .ingredients-grid-section {
+        padding: 3rem 1.5rem;
     }
 }
 
