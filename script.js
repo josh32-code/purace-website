@@ -179,4 +179,49 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // ─── Ecommerce & Lead Tracking ─────────────────────────────────────────────
+    // Buy buttons — fires begin_checkout (GA4/GTM) and InitiateCheckout (Meta Pixel)
+    document.querySelectorAll('.btn-buy').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var titleEl = document.querySelector('.pdp-title');
+            var priceEl = document.querySelector('.pdp-price');
+            var productName = titleEl ? titleEl.textContent.trim().replace(/\s+/g, ' ') : 'Facial Oil';
+            var productPrice = priceEl ? parseFloat(priceEl.textContent.replace(/[^0-9.]/g, '')) : 49;
+
+            window.dataLayer = window.dataLayer || [];
+            dataLayer.push({ ecommerce: null });
+            dataLayer.push({
+                event: 'begin_checkout',
+                ecommerce: {
+                    currency: 'AUD',
+                    value: productPrice,
+                    items: [{ item_name: productName, item_brand: 'Puracé', item_category: 'Facial Oil', price: productPrice, quantity: 1 }]
+                }
+            });
+            if (typeof fbq === 'function') {
+                fbq('track', 'InitiateCheckout', { content_name: productName, content_type: 'product', value: productPrice, currency: 'AUD', num_items: 1 });
+            }
+        });
+    });
+
+    // Contact form — fires generate_lead (GA4/GTM) and Lead (Meta Pixel)
+    var contactForm = document.querySelector('.contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function() {
+            window.dataLayer = window.dataLayer || [];
+            dataLayer.push({ event: 'generate_lead' });
+            if (typeof fbq === 'function') { fbq('track', 'Lead'); }
+        });
+    }
+
+    // Newsletter form — fires newsletter_signup (GA4/GTM)
+    var newsletterForm = document.querySelector('.newsletter-form');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function() {
+            window.dataLayer = window.dataLayer || [];
+            dataLayer.push({ event: 'newsletter_signup' });
+        });
+    }
+    // ───────────────────────────────────────────────────────────────
 });

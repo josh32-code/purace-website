@@ -55,8 +55,22 @@
             box-shadow: 0 8px 20px rgba(199, 109, 80, 0.3);
         }
     </style>
+    <!-- ─── Analytics & Marketing ──────────────────────────────── -->
+    <!-- Google Tag Manager — replace GTM-XXXXXXX with your container ID -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+    <!-- Klaviyo — replace YOUR_KLAVIYO_ID with your Public API Key -->
+    <script async type="text/javascript" src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=YOUR_KLAVIYO_ID"></script>
+    <!-- Meta Pixel — replace YOUR_PIXEL_ID with your Pixel ID -->
+    <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','YOUR_PIXEL_ID');fbq('track','PageView');</script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"/></noscript>
+    <!-- Microsoft Clarity — replace YOUR_CLARITY_ID with your Project ID -->
+    <script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","YOUR_CLARITY_ID");</script>
+    <!-- ──────────────────────────────────────────────────────────── -->
 </head>
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <header class="site-header">
         <div class="header-inner">
             <button class="icon-btn menu-toggle" aria-label="Menu">
@@ -87,6 +101,47 @@
         </div>
     </section>
 
+    <!-- Order confirmation tracking — reads ?source=order&product=NAME&price=49 set by Stripe redirect -->
+    <script>
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var source  = params.get('source');
+            var product = params.get('product');
+            var price   = parseFloat(params.get('price')) || 49;
+
+            if (source === 'order') {
+                // Update page copy for order confirmation
+                var heading    = document.querySelector('.thank-you-content h1');
+                var paragraphs = document.querySelectorAll('.thank-you-content p');
+                if (heading)      heading.textContent = 'Order Confirmed!';
+                if (paragraphs[0]) paragraphs[0].textContent = 'Thank you for your Puracé order' + (product ? ' — ' + product : '') + '. You will receive a confirmation email from Stripe shortly.';
+                if (paragraphs[1]) paragraphs[1].textContent = 'Your order is being prepared with care. Expect delivery within 3–7 business days.';
+
+                // GA4 purchase event via GTM dataLayer
+                window.dataLayer = window.dataLayer || [];
+                dataLayer.push({ ecommerce: null });
+                dataLayer.push({
+                    event: 'purchase',
+                    ecommerce: {
+                        transaction_id: 'stripe_' + Date.now(),
+                        currency: 'AUD',
+                        value: price,
+                        items: [{ item_name: product || 'Puracé Facial Oil', item_brand: 'Puracé', item_category: 'Facial Oil', price: price, quantity: 1 }]
+                    }
+                });
+
+                // Meta Pixel purchase event
+                if (typeof fbq === 'function') {
+                    fbq('track', 'Purchase', { content_name: product || 'Puracé Facial Oil', content_type: 'product', value: price, currency: 'AUD', num_items: 1 });
+                }
+
+                // Klaviyo placed order event
+                if (typeof _learnq !== 'undefined') {
+                    _learnq.push(['track', 'Placed Order', { OrderValue: price, ItemNames: [product || 'Puracé Facial Oil'] }]);
+                }
+            }
+        })();
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
